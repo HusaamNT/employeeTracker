@@ -1,10 +1,5 @@
-const express = require("express");
+const mysql = require('mysql2');
 
-const app = express();
-const PORT = process.env.PORT || 3001;
-
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
 
 const db = mysql.createConnection(
     {
@@ -18,6 +13,3 @@ const db = mysql.createConnection(
 
 
 
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
