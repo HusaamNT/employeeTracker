@@ -11,7 +11,8 @@ const db = mysql.createConnection(
     console.log(`Connected to the employee_db database.`)
   );
 
-const trackerQuestions = {
+const trackerQuestions = async function(){
+    await inquirer.prompt({
     type: "list",
     name: "employeeTracker",
     message: "What would you like to view today?",
@@ -23,28 +24,44 @@ const trackerQuestions = {
       "Add a role",
       "Add an employee",
       "Update an employee role",
-    ],
-  };
+    ]
+})};
 
-const askQuestions = async function(){
-    await inquirer.prompt(trackerQuestions)
-};
+async function startQuestions(){
+    await trackerQuestions()
+    checkInput()
+}
 
 function viewDepartments() {
-    db.query("SELECT * FROM DEPARTMENTS", function(err, results){
+    db.query("SELECT * FROM DEPARTMENT", function(err, results){
         console.log(results)
     },
-    askQuestions()
+    startQuestions()
 )};
 
 function viewRoles() {
-    db.query("SELECT * ROLES", function(err, results){
+    db.query("SELECT * ROLE", function(err, results){
         console.log(results)
     },
-    askQuestions()
+    startQuestions()
 )}; 
 
-const startQuestions = function(){
-    askQuestions()
-    checkInput()
+function viewEmployees() {
+    db.query("SELECT * EMPLOYEE", function(err, results){
+        console.log(results)
+    },
+    startQuestions()
+)}; 
+
+function checkInput(inputs){
+    const input = inputs.employeeTracker;
+    if (input === "View all departments"){
+        viewDepartments()
+    }else if (input === "View all roles"){
+        viewRoles()
+    }else if (input === "View all employees"){
+        viewEmployees()
+    }
 }
+
+startQuestions()
