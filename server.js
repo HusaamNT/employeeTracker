@@ -28,6 +28,14 @@ const trackerQuestions = async function(){
     ]
 })};
 
+const departmentInfo = async function(){
+    await inquirer.prompt({
+        type: "input",
+        name: "departmentName",
+        message: "Department Name:"
+    })
+}
+
 async function startQuestions(){
     await trackerQuestions()
     checkInput()
@@ -53,6 +61,12 @@ function viewEmployees() {
     },
     startQuestions()
 )}; 
+
+function addDepartment(){
+    db.query(`INSERT INTO department (name)
+    VALUES(${departmentName})
+    `)
+}
 
 function checkInput(inputs){
     const input = inputs.employeeTracker;
