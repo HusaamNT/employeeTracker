@@ -1,6 +1,7 @@
 const mysql = require('mysql2');
 const inquirer = require("inquirer");
 const fs = require("fs");
+const { title } = require('process');
 
 const db = mysql.createConnection(
     {
@@ -32,8 +33,51 @@ const departmentInfo = async function(){
     await inquirer.prompt({
         type: "input",
         name: "departmentName",
-        message: "Department Name:"
+        message: "Department name:"
     })
+}
+
+const roleInfo = async function(){
+    await inquirer.prompt([{
+        type: "input",
+        name: "title",
+        message: "Role title:"
+    },
+    {
+        type: "number",
+        name: "salary",
+        message: "Salary:"
+    },
+    {
+        type: "number",
+        name: "roleDepartmentId",
+        message: "Department ID:"
+    }
+])
+}
+
+const employeeInfo = async function(){
+    await inquirer.prompt([{
+        type: "input",
+        name: "firstName",
+        message: "First Name:"
+    },
+    {
+        type: "input",
+        name: "secondName",
+        message: "Second Name:"
+    },
+    {
+        type: "number",
+        name: "RoleId",
+        message: "Role ID:"
+    },
+    {
+        type: "number",
+        name: "employeeDepartmentId",
+        message: "Department ID:"
+    }
+])
 }
 
 async function startQuestions(){
@@ -62,9 +106,21 @@ function viewEmployees() {
     startQuestions()
 )}; 
 
-function addDepartment(){
+async function addDepartment(){
     db.query(`INSERT INTO department (name)
     VALUES(${departmentName})
+    `)
+}
+
+async function addRole(){
+    db.query(`INSERT INTO ROLE (title, salary, department_id)
+    VALUES("${title}", "${salary}", "${roleDepartmentId}")
+    `)
+}
+
+async function addEmployee(){
+    db.query(`INSERT INTO EMPLOYEE (firstName, secondName, role_id, department_id)
+    VALUES("${firstName}", "${secondName}", "${RoleId}", "${employeeDepartmentId}")
     `)
 }
 
