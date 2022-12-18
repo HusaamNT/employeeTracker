@@ -33,11 +33,18 @@ const askQuestions = async function(){
 function viewDepartments() {
     db.query("SELECT * FROM DEPARTMENTS", function(err, results){
         console.log(results)
-    }
+    },
+    askQuestions()
 )};
 
 function viewRoles() {
     db.query("SELECT * ROLES", function(err, results){
         console.log(results)
-    }
+    },
+    askQuestions()
 )}; 
+
+const startQuestions = function(){
+    askQuestions()
+    checkInput()
+}
