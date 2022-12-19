@@ -80,11 +80,6 @@ const employeeInfo = async function(){
 ])
 }
 
-async function startQuestions(){
-    await trackerQuestions()
-    checkInput()
-}
-
 function viewDepartments() {
     db.query("SELECT * FROM DEPARTMENT", function(err, results){
         console.log(results)
@@ -143,4 +138,10 @@ function checkInput(inputs){
         addRole()
 }
 };
+
+async function startQuestions(){
+    await trackerQuestions()
+    checkInput()
+}
+
 startQuestions()
