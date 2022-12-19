@@ -14,7 +14,7 @@ const db = mysql.createConnection(
   );
 
 const trackerQuestions = async function(){
-    await inquirer.prompt({
+    return await inquirer.prompt({
     type: "list",
     name: "employeeTracker",
     message: "What would you like to view today?",
@@ -123,7 +123,9 @@ async function addEmployee(){
 }
 
 function checkInput(inputs){
+    console.log(inputs)
     const input = inputs.employeeTracker;
+    console.log(input)
     if (input === "View all departments"){
         viewDepartments()
     }else if (input === "View all roles"){
@@ -140,8 +142,8 @@ function checkInput(inputs){
 };
 
 async function startQuestions(){
-    await trackerQuestions()
-    checkInput()
+    const inputs = await trackerQuestions()
+    checkInput(inputs)
 }
 
 startQuestions()
