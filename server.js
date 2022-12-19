@@ -107,18 +107,21 @@ function viewEmployees() {
 )}; 
 
 async function addDepartment(){
+    departmentInfo();
     db.query(`INSERT INTO department (name)
     VALUES(${departmentName})
     `)
 }
 
 async function addRole(){
+    roleInfo();
     db.query(`INSERT INTO ROLE (title, salary, department_id)
     VALUES("${title}", "${salary}", "${roleDepartmentId}")
     `)
 }
 
 async function addEmployee(){
+    employeeInfo();
     db.query(`INSERT INTO EMPLOYEE (firstName, secondName, role_id, department_id)
     VALUES("${firstName}", "${secondName}", "${RoleId}", "${employeeDepartmentId}")
     `)
@@ -132,7 +135,12 @@ function checkInput(inputs){
         viewRoles()
     }else if (input === "View all employees"){
         viewEmployees()
-    }
+    }else if (input === "Add a department"){
+        addEmployee()
+    }else if (input === "Add a employee"){
+        addDepartment()
+    }else if (input === "Add a role"){
+        addRole()
 }
-
+};
 startQuestions()
