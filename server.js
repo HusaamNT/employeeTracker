@@ -1,35 +1,39 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 const inquirer = require("inquirer");
 const fs = require("fs");
 const { title } = require('process');
 
-const db = mysql.createConnection(
-    {
-      host: 'localhost',
-      user: 'root',
-      password: 'password',
-      database: 'employee_db'
-    },
+let db
+const getDb = async () => {
+    db = await mysql.createConnection(
+        {
+            host: 'localhost',
+            user: 'root',
+            password: 'password',
+            database: 'employee_db'
+        }
+    );
     console.log(`Connected to the employee_db database.`)
-  );
+}
 
-const trackerQuestions = async function(){
+const trackerQuestions = async function () {
     return await inquirer.prompt({
-    type: "list",
-    name: "employeeTracker",
-    message: "What would you like to view today?",
-    choices: [
-      "View all departments",
-      "View all roles",
-      "View all employees",
-      "Add a department",
-      "Add a role",
-      "Add an employee",
-      "Update an employee role",
-    ]
-})};
+        type: "list",
+        name: "employeeTracker",
+        message: "What would you like to view today?",
+        choices: [
+            "View all departments",
+            "View all roles",
+            "View all employees",
+            "Add a department",
+            "Add a role",
+            "Add an employee",
+            "Update an employee role",
+        ]
+    })
+};
 
-const departmentInfo = async function(){
+const departmentInfo = async function () {
     await inquirer.prompt({
         type: "input",
         name: "departmentName",
@@ -37,7 +41,7 @@ const departmentInfo = async function(){
     })
 }
 
-const roleInfo = async function(){
+const roleInfo = async function () {
     await inquirer.prompt([{
         type: "input",
         name: "title",
@@ -53,10 +57,10 @@ const roleInfo = async function(){
         name: "roleDepartmentId",
         message: "Department ID:"
     }
-])
+    ])
 }
 
-const employeeInfo = async function(){
+const employeeInfo = async function () {
     await inquirer.prompt([{
         type: "input",
         name: "firstName",
@@ -77,73 +81,74 @@ const employeeInfo = async function(){
         name: "employeeDepartmentId",
         message: "Department ID:"
     }
-])
+    ])
 }
 
-function viewDepartments() {
-    db.query("SELECT * FROM DEPARTMENT", function(err, results){
-        console.log(results)
-    },
-    startQuestions()
-)};
+async function viewDepartments() {
+    const [results, _] = await db.query("SELECT * FROM department;")
+    console.log(results)
+};
 
 function viewRoles() {
-    db.query("SELECT * ROLE", function(err, results){
-        console.log(results)
+    db.query("SELECT * ROLE", function (err, results) {
+        console.log('ROLE RESULTS', results)
     },
-    startQuestions()
-)}; 
+        startQuestions()
+    )
+};
 
 function viewEmployees() {
-    db.query("SELECT * EMPLOYEE", function(err, results){
-        console.log(results)
+    db.query("SELECT * EMPLOYEE", function (err, results) {
+        console.log('EMPLOYEE RESULTS', results)
     },
-    startQuestions()
-)}; 
+        startQuestions()
+    )
+};
 
-async function addDepartment(){
+async function addDepartment() {
     departmentInfo();
     db.query(`INSERT INTO department (name)
     VALUES(${departmentName})
     `)
 }
 
-async function addRole(){
+async function addRole() {
     roleInfo();
     db.query(`INSERT INTO ROLE (title, salary, department_id)
     VALUES("${title}", "${salary}", "${roleDepartmentId}")
     `)
 }
 
-async function addEmployee(){
+async function addEmployee() {
     employeeInfo();
     db.query(`INSERT INTO EMPLOYEE (firstName, secondName, role_id, department_id)
     VALUES("${firstName}", "${secondName}", "${RoleId}", "${employeeDepartmentId}")
     `)
 }
 
-function checkInput(inputs){
-    console.log(inputs)
+async function checkInput(inputs) {
+    console.log('INPUTS', inputs)
     const input = inputs.employeeTracker;
-    console.log(input)
-    if (input === "View all departments"){
-        viewDepartments()
-    }else if (input === "View all roles"){
+    console.log('INPUT', input)
+    if (input === "View all departments") {
+        await viewDepartments()
+    } else if (input === "View all roles") {
         viewRoles()
-    }else if (input === "View all employees"){
+    } else if (input === "View all employees") {
         viewEmployees()
-    }else if (input === "Add a department"){
+    } else if (input === "Add a department") {
         addEmployee()
-    }else if (input === "Add a employee"){
+    } else if (input === "Add a employee") {
         addDepartment()
-    }else if (input === "Add a role"){
+    } else if (input === "Add a role") {
         addRole()
-}
+    }
 };
 
-async function startQuestions(){
+async function startQuestions() {
+    getDb()
     const inputs = await trackerQuestions()
-    checkInput(inputs)
+    await checkInput(inputs)
 }
 
 startQuestions()
