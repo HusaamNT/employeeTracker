@@ -61,48 +61,46 @@ const roleInfo = async function () {
 }
 
 const employeeInfo = async function () {
-    await inquirer.prompt([{
+    console.log("hello there")
+    return await inquirer.prompt([{
         type: "input",
-        name: "firstName",
+        name: "first_name",
         message: "First Name:"
     },
     {
         type: "input",
-        name: "secondName",
+        name: "last_name",
         message: "Second Name:"
     },
     {
         type: "number",
-        name: "RoleId",
+        name: "role_id",
         message: "Role ID:"
     },
     {
         type: "number",
-        name: "employeeDepartmentId",
+        name: "manager_id",
         message: "Department ID:"
     }
     ])
 }
 
 async function viewDepartments() {
-    const [results, _] = await db.query("SELECT * FROM department;")
-    console.log(results)
+    const [results] = await db.query("SELECT * FROM department;")
+    console.table(results);
+    startQuestions()
 };
 
-function viewRoles() {
-    db.query("SELECT * ROLE", function (err, results) {
-        console.log('ROLE RESULTS', results)
-    },
-        startQuestions()
-    )
+async function viewRoles() {
+    const [results] = await db.query("SELECT * FROM role;")
+    console.table(results);
+    startQuestions()
 };
 
-function viewEmployees() {
-    db.query("SELECT * EMPLOYEE", function (err, results) {
-        console.log('EMPLOYEE RESULTS', results)
-    },
-        startQuestions()
-    )
+async function viewEmployees() {
+    const [results] = await db.query("SELECT * FROM employee;")
+    console.table(results);
+    startQuestions()
 };
 
 async function addDepartment() {
@@ -120,10 +118,12 @@ async function addRole() {
 }
 
 async function addEmployee() {
-    employeeInfo();
-    db.query(`INSERT INTO EMPLOYEE (firstName, secondName, role_id, department_id)
-    VALUES("${firstName}", "${secondName}", "${RoleId}", "${employeeDepartmentId}")
-    `)
+    console.log("hello from ae!!!")
+    const answers = await employeeInfo();
+    console.log(answers);
+    const [result] = await db.query(`INSERT INTO employee SET ?`, answers)
+    startQuestions()
+
 }
 
 async function checkInput(inputs) {
@@ -131,15 +131,16 @@ async function checkInput(inputs) {
     const input = inputs.employeeTracker;
     console.log('INPUT', input)
     if (input === "View all departments") {
-        await viewDepartments()
+        await viewDepartments() 
     } else if (input === "View all roles") {
         viewRoles()
     } else if (input === "View all employees") {
         viewEmployees()
     } else if (input === "Add a department") {
-        addEmployee()
-    } else if (input === "Add a employee") {
         addDepartment()
+    } else if (input === "Add an employee") {
+        console.log("hello from the if!!!")
+        addEmployee()
     } else if (input === "Add a role") {
         addRole()
     }
