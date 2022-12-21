@@ -67,10 +67,10 @@ const roleInfo = async function () {
 const employeeInfo = async function () {
     const [arrayR] = await db.query(`SELECT * FROM role;`)
     const [arrayE] = await db.query(`SELECT * FROM employee;`)
-    console.log(arrayE)
-    console.log(arrayR)
+    console.table(arrayE)
+    console.table(arrayR)
     const listEmployee = arrayE.map(it => ({value: it.id, name: it.first_name}))
-    const listRole = arrayR.map(item => ({value: item.id, name: item.department_id}))
+    const listRole = arrayR.map(item => ({value: item.id, name: item.title}))
     return await inquirer.prompt([{
         type: "input",
         name: "first_name",
@@ -85,13 +85,13 @@ const employeeInfo = async function () {
         type: "list",
         name: "role_id",
         message: "Role ID:",
-        list: listRole
+        choices: listRole
     },
     {
         type: "list",
         name: "manager_id",
         message: "Manager ID:",
-        list: listEmployee
+        choices: listEmployee
     }
     ])
 }
@@ -132,14 +132,16 @@ async function addRole() {
 }
 
 async function addEmployee() {
-    console.log("hello from ae!!!")
     const answers = await employeeInfo();
     console.log(answers);
-    const [result] = await db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) values (?,?,?,?)`,[answers.first_name, answers.last_name, answers.role_id, manager_id])
+    const [result] = await db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) values (?,?,?,?)`,[answers.first_name, answers.last_name, answers.role_id, answers.manager_id])
     startQuestions()
-
 }
 
+async function editEmployee() {
+console.log("In development!");
+startQuestions();
+}
 async function checkInput(inputs) {
     console.log('INPUTS', inputs)
     const input = inputs.employeeTracker;
@@ -153,10 +155,11 @@ async function checkInput(inputs) {
     } else if (input === "Add a department") {
         addDepartment()
     } else if (input === "Add an employee") {
-        console.log("hello from the if!!!")
         addEmployee()
     } else if (input === "Add a role") {
         addRole()
+    }else if (input === "Update an employee role") {
+        editEmployee()
     }
 };
 
