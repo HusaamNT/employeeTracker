@@ -85,9 +85,17 @@ const employeeInfo = async function () {
     ])
 }
 
+//create function to preserve department count and role count so invalid values can be spotted
+countObjects = async () =>{
+    const [department] = await db.query("SELECT COUNT(*) FROM department;")
+    console.log(department)
+}
+
+
 async function viewDepartments() {
     const [results] = await db.query("SELECT * FROM department;")
     console.table(results);
+    countObjects();
     startQuestions()
 };
 
@@ -111,10 +119,11 @@ async function addDepartment() {
 }
 
 async function addRole() {
-    roleInfo();
-    db.query(`INSERT INTO ROLE (title, salary, department_id)
-    VALUES("${title}", "${salary}", "${roleDepartmentId}")
-    `)
+    console.log("hello from addRole!!!")
+    const answers = await roleInfo();
+    console.log(answers);
+    const [result] = await db.query(`INSERT INTO role SET ?`, answers)
+    startQuestions()
 }
 
 async function addEmployee() {
