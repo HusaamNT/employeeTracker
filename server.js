@@ -42,7 +42,10 @@ const departmentInfo = async function () {
 }
 
 const roleInfo = async function () {
-    await inquirer.prompt([{
+    const [array] = await db.query(`SELECT * FROM department;`)
+    console.log(array)
+    const list = array.map(item => ({value: item.id, name: item.name}))
+    return await inquirer.prompt([{
         type: "input",
         name: "title",
         message: "Role title:"
@@ -53,15 +56,21 @@ const roleInfo = async function () {
         message: "Salary:"
     },
     {
-        type: "number",
+        type: "list",
         name: "roleDepartmentId",
-        message: "Department ID:"
+        message: "Department ID:",
+        choices: list
     }
     ])
 }
 
 const employeeInfo = async function () {
-    console.log("hello there")
+    const [arrayR] = await db.query(`SELECT * FROM role;`)
+    const [arrayE] = await db.query(`SELECT * FROM employee;`)
+    console.log(arrayE)
+    console.log(arrayR)
+    const listEmployee = arrayE.map(it => ({value: it.id, name: it.first_name}))
+    const listRole = arrayR.map(item => ({value: item.id, name: item.department_id}))
     return await inquirer.prompt([{
         type: "input",
         name: "first_name",
@@ -73,29 +82,25 @@ const employeeInfo = async function () {
         message: "Second Name:"
     },
     {
-        type: "number",
+        type: "list",
         name: "role_id",
-        message: "Role ID:"
+        message: "Role ID:",
+        list: listRole
     },
     {
-        type: "number",
+        type: "list",
         name: "manager_id",
-        message: "Department ID:"
+        message: "Manager ID:",
+        list: listEmployee
     }
     ])
 }
 
 //create function to preserve department count and role count so invalid values can be spotted
-countObjects = async () =>{
-    const [department] = await db.query("SELECT COUNT(*) FROM department;")
-    console.log(department)
-}
-
 
 async function viewDepartments() {
     const [results] = await db.query("SELECT * FROM department;")
     console.table(results);
-    countObjects();
     startQuestions()
 };
 
@@ -122,7 +127,7 @@ async function addRole() {
     console.log("hello from addRole!!!")
     const answers = await roleInfo();
     console.log(answers);
-    const [result] = await db.query(`INSERT INTO role SET ?`, answers)
+    const [result] = await db.query(`INSERT INTO role (title, salary, department_id) values (?,?,?)`,[answers.title, answers.salary, answers.roleDepartmentId])
     startQuestions()
 }
 
@@ -130,7 +135,7 @@ async function addEmployee() {
     console.log("hello from ae!!!")
     const answers = await employeeInfo();
     console.log(answers);
-    const [result] = await db.query(`INSERT INTO employee SET ?`, answers)
+    const [result] = await db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) values (?,?,?,?)`,[answers.first_name, answers.last_name, answers.role_id, manager_id])
     startQuestions()
 
 }
